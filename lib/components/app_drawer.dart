@@ -12,7 +12,7 @@ class AppDrawer extends StatelessWidget {
         children: [
           DrawerHeader(
             child: Icon(
-              Icons.smart_screen_rounded,
+              Icons.laptop_windows_rounded,
               size: 40,
               color: Theme.of(context).colorScheme.inversePrimary,
             ),
