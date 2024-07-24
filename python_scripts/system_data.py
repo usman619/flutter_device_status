@@ -1,8 +1,8 @@
 import GPUtil
-import torch
 import psutil
 import os
 import time
+from datetime import datetime
 import cpuinfo
 import json
 
@@ -17,14 +17,10 @@ kerenal = getattr(os_name, 'release')
 cpu = cpuinfo.get_cpu_info()['brand_raw']
 cpu_core_logical = psutil.cpu_count()
 cpu_core_physical = psutil.cpu_count(logical=False)
+cpu_percent = psutil.cpu_percent()
 cpu_freq_min = f"{psutil.cpu_freq().min: .2f} MHz "
 cpu_freq_max = f"{psutil.cpu_freq().max: .2f} MHz "
 
-# temp_data = psutil.sensors_temperatures()
-# core0 = f"{temp_data['coretemp'][1].label} : {temp_data['coretemp'][1].current} \u00b0 C"
-# core1 = f"{temp_data['coretemp'][2].label} : {temp_data['coretemp'][2].current} \u00b0 C"
-# core2 = f"{temp_data['coretemp'][3].label} : {temp_data['coretemp'][3].current} \u00b0 C"
-# core3 = f"{temp_data['coretemp'][4].label} : {temp_data['coretemp'][4].current} \u00b0 C"
 
 # Core Temperature
 def get_cpu_core_temperatures():
@@ -36,49 +32,29 @@ def get_cpu_core_temperatures():
     result = []
 
     for core in core_temps:
-        core_info = f"{core.label} : {core.current} \u00b0C"
+        core_info = f"{core.label} : {core.current} °C"
         result.append(core_info)
 
     result.remove(result[0])
     return result
 
-# print(get_cpu_core_temperatures())
+# Boot Time and Up Time
+def get_boot_time():
+    boot_time = psutil.boot_time()
+    boot_time_str = datetime.fromtimestamp(boot_time).strftime("%Y-%m-%d %H:%M:%S")
+    return boot_time_str
 
-# Boot Time
-boot_time = psutil.boot_time()
+def get_uptime():
+    boot_time = psutil.boot_time()
+    current_time = time.time()
+    uptime_seconds = current_time - boot_time
+
+    uptime_minutes = uptime_seconds / 60
+    uptime_hours = uptime_minutes / 60
+
+    return uptime_seconds, uptime_minutes, uptime_hours
 
 # GPU Information
-
-# gpu_temp = torch.cuda.temperature()
-# gpu_memory_total = torch.cuda.memory_reserved()
-# gpu_memory_used = torch.cuda.memory_allocated()
-# gpu_memory_free = torch.cuda.memory_reserved() - torch.cuda.memory_allocated()
-
-# if(torch.cuda.is_available()):
-#     gpu_name = torch.cuda.get_device_name(0)
-# else:
-#     gpu_name = "No GPU Found"
-
-
-# def get_gpu_info():
-#     gpus = GPUtil.getGPUs()
-#     if not gpus:
-#         return "No GPU found."
-
-#     gpu_info = []
-#     for gpu in gpus:
-#         info = {
-#             'id': gpu.id,
-#             'name': gpu.name,
-#             'temperature': f"{gpu.temperature} °C",
-#             'total_memory': f"{gpu.memoryTotal} MB",
-#             'used_memory': f"{gpu.memoryUsed} MB",
-#             'free_memory': f"{gpu.memoryFree} MB",
-#             'load': f"{gpu.load * 100:.2f}%"
-#         }
-#         gpu_info.append(info)
-
-#     return gpu_info
 
 gpus = GPUtil.getGPUs()
 gpu_name = ""
@@ -101,12 +77,11 @@ else:
 
 
 print(gpu.name)
-# print(get_gpu_info())
 
 
 # NVMe Temperature
-nvme_temp =  f"{psutil.sensors_temperatures()['nvme'][0].current} \u00b0 C"
-# print(f"NVMe Temperture: {nvme_temp}")
+nvme_temp =  f"{psutil.sensors_temperatures()['nvme'][0].current} °C"
+
 # Memory Information
 
 def bytes_to_human_readable(num_bytes):
@@ -115,18 +90,20 @@ def bytes_to_human_readable(num_bytes):
             return f"{num_bytes:.2f} {unit}"
         num_bytes /= 1024.0
 
-# ------------------------------------------------
+# -----------------------------------------------------------------------------------
 virtual_memory_total = bytes_to_human_readable(psutil.virtual_memory().total)
 virtual_memory_available = bytes_to_human_readable(psutil.virtual_memory().available)
 virtual_memory_used = bytes_to_human_readable(psutil.virtual_memory().used)
-# ------------------------------------------------
+virtual_memory_percent = psutil.virtual_memory().percent
+# -----------------------------------------------------------------------------------
 swap_memory_total = bytes_to_human_readable(psutil.swap_memory().total)
 swap_memory_available = bytes_to_human_readable(psutil.swap_memory().free)
 swap_memory_used = bytes_to_human_readable(psutil.swap_memory().used)
-# ------------------------------------------------
+# -----------------------------------------------------------------------------------
 disk_usage_total = bytes_to_human_readable(psutil.disk_usage('/').total)
 disk_usage_available = bytes_to_human_readable(psutil.disk_usage('/').free)
 disk_usage_used = bytes_to_human_readable(psutil.disk_usage('/').used)
+# -----------------------------------------------------------------------------------
 
 def get_system_info():
     
@@ -135,8 +112,6 @@ def get_system_info():
     gpu_memory_total = ""
     gpu_memory_used = ""
     gpu_memory_free = ""
-    gpu_load = ""
-    gpu_temp = ""
 
     if not gpus:
         gpu = "No GPU found."
@@ -146,9 +121,6 @@ def get_system_info():
         gpu_memory_total = f"{gpu.memoryTotal} MB"
         gpu_memory_used = f"{gpu.memoryUsed} MB"
         gpu_memory_free = f"{gpu.memoryFree} MB"
-        gpu_load = f"{gpu.load * 100:.2f}%"
-        gpu_temp = f"{gpu.temperature} °C"
-
 
     return json.dumps({
         "username": username,
@@ -179,90 +151,39 @@ def get_system_info():
 
 
 def get_details():
+    gpus = GPUtil.getGPUs()
+    gpu_load = ""
+    gpu_temp = ""
+    if not gpus:
+        gpu_load = "-"
+        gpu_temp = "- °C"
+    else:
+        gpu = gpus[0]
+        gpu_load = f"{gpu.load * 100:.2f}%"
+        gpu_temp = f"{gpu.temperature} °C"
+    
+    sensorsBattery = psutil.sensors_battery()
+    batteryPercent = 0.0
+    batterySecsLeft = 0
+    batteryPowerPlugged = True
+    if sensorsBattery is not None:
+        batteryPercent = getattr(sensorsBattery, 'percent')
+        batterySecsLeft = getattr(sensorsBattery, 'secsleft')
+        batteryPowerPlugged=  getattr(sensorsBattery, 'power_plugged')
+
     return json.dumps({
-        "up_time": time.time() - boot_time,
-        "boot_time": boot_time,
-        "cup_percent": psutil.cpu_percent(),
+        "up_time": time.strftime('%H:%M:%S', time.gmtime(get_uptime()[0])),
+        "boot_time": get_boot_time(),
+        "cpu_percent": cpu_percent,
         "core_temp": get_cpu_core_temperatures(),
+        "gpu_load": gpu_load,
+        "gpu_temp": gpu_temp,
         "nvme_temp": nvme_temp,
+        "virtual_memory_percent": virtual_memory_percent,
+        "swap_memory_percent": psutil.swap_memory().percent,
+        "disk_usage_percent": psutil.disk_usage('/').percent,
+        "battery_percent": batteryPercent,
+        "battery_secs_left": batterySecsLeft,
+        "battery_power_plugged": batteryPowerPlugged
 
     })
-
-
-# print(get_system_info())
-
-# print(gpu_memory_total)
-# print(gpu_memory_used)
-# print(gpu_memory_free)
-
-# print(f"Virtual Memory Total: {virtual_memory_total}")
-# print(f"Swap Memory Total: {swap_memory_total}")
-# print(f"Disk Usage Total: {disk_usage_total}")
-
-# def get_system_info():
-    
-
-# System Temperature
-# temperature_high = 0.0
-# temperature_critical = 0.0
-# if psutil.sensors_temperatures().get("acpitz") is not None:
-#     temperatureHigh =  getattr(psutil.sensors_temperatures()['acpitz'][0], 'high')
-#     temperatureCritical =  getattr(psutil.sensors_temperatures()['acpitz'][0], 'critical')
-
-# temp_data = psutil.sensors_temperatures()
-# print(f"Core Temperture:")
-# print(f"{temp_data['coretemp'][1].label} : {temp_data['coretemp'][1].current} \u00b0 C")
-# print(f"{temp_data['coretemp'][2].label} : {temp_data['coretemp'][2].current} \u00b0 C")
-# print(f"{temp_data['coretemp'][3].label} : {temp_data['coretemp'][3].current} \u00b0 C")
-# print(f"{temp_data['coretemp'][4].label} : {temp_data['coretemp'][4].current} \u00b0 C")
-
-# nvme_temp = temp_data['nvme'][0].current
-
-# print(f"NVMe Temperture: {nvme_temp} \u00b0 C")
-
-# def get_cpu_core_temperatures():
-#     temp_data = psutil.sensors_temperatures()
-#     if 'coretemp' not in temp_data:
-#         return "No core temperature data available."
-
-#     core_temps = temp_data['coretemp']
-#     result = []
-
-#     for core in core_temps:
-#         core_info = f"{core.label} : {core.current} \u00b0C"
-#         result.append(core_info)
-
-#     return result
-
-# # Example usage
-# core_temperatures = get_cpu_core_temperatures()
-# for core_temp in core_temperatures:
-#     print(core_temp)
-
-# print(core_temperatures)
-# ------------------------------------------------------------------------------------------------
-
-# print(f"Username: {username}")
-# print(f"Hostname: {hostname}")
-
-# print(f"System: {system}")
-# print(f"Machine: {machine}")
-# print(f"Kerenal: {kerenal}")
-# print("-----------------------------")
-# print(f"CPU: {cpu}")
-# print(f"CPU Core (Logical): {cpu_core_logical}")
-# print(f"CPU Core (Physical): {cpu_core_physical}")
-# print(f"CPU Frequency (Min): {cpu_freq_min}")
-# print(f"CPU Frequency (Max): {cpu_freq_max}")
-# print(f"Boot Time: {boot_time}")
-# print("-----------------------------")
-# print(f"GPU: {gpu_name}")
-# print("-----------------------------")
-# print(f"Virtual Memory Total: {virtual_memory_total}")
-# print(f"Swap Memory Total: {swap_memory_total}")
-# print(f"Disk Usage Total: {disk_usage_total}")
-# print("-----------------------------")
-# print(f"Temperature High: {temperature_high}")
-# print(f"Temperature Critical: {temperature_critical}")
-# print(f"Temperature Sensor: {psutil.sensors_temperatures()}")
-
