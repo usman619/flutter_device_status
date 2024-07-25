@@ -1,7 +1,6 @@
 import asyncio
 import time
 import websockets
-import daemon
 from termcolor import colored
 
 import system_data
@@ -10,39 +9,37 @@ t = 0.0
 
 async def echo(websocket, path):
     async for message in websocket:
-        await handleMessage(message, websocket)
+        await handle_message(message, websocket)
 
-async def handleMessage(message, websocket):
+async def handle_message(message, websocket):
     global t
 
-    print(message)
-    if(message == "get_system_info()"):
-        await sendSystemData(websocket, system_data.get_system_info())
-    elif(message == "get_details()"):
-        if(time.time() < t):
-            print("Timeout")
+    print(colored(f"Received: {message}", 'blue'))
+    if message == "get_system_info()":
+        print(f"System Info:{system_data.get_system_info()}")
+        await send_system_data(websocket, system_data.get_system_info())
+    elif message == "get_details()":
+        if time.time() < t:
+            print(colored("Timeout", 'yellow'))
             return
         
-        await sendSystemData(websocket, system_data.get_details())
+        await send_system_data(websocket, system_data.get_details())
     else:
-        print(colored("message not valid!", 'red'))
+        print(colored("Message not valid!", 'red'))
     
     t = time.time() + 1.5
 
-async def sendSystemData(websocket, data):
+async def send_system_data(websocket, data):
     await websocket.send(data)
-    print(colored("Reply: " + data, 'green'))
+    print(colored(f"Reply: {data}", 'green'))
 
-def run_daemon():
-    asyncio.get_event_loop().run_until_complete(
-        websockets.serve(echo, '0.0.0.0', 9499))
-    asyncio.get_event_loop().run_forever()
+async def main():
+    async with websockets.serve(echo, '0.0.0.0', 9499):
+        print(colored('Starting WebSocket server at ws://localhost:9499...', 'green'))
+        await asyncio.Future()  # run forever
 
-print(colored('Starting websocket server at ws://localhost:9499...', 'green'))
-print()
-print('to cancel this process:')
-print('get the pid with: ' + colored('ps axuw | grep server_listener.py', 'cyan'))
-print('run: ' + colored('kill <pid>', 'cyan'))
-
-with daemon.DaemonContext():
-    run_daemon()
+if __name__ == "__main__":
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print(colored("WebSocket server stopped.", 'red'))

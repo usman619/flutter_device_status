@@ -76,8 +76,6 @@ else:
     gpu_temp = f"{gpu.temperature} °C"
 
 
-print(gpu.name)
-
 
 # NVMe Temperature
 nvme_temp =  f"{psutil.sensors_temperatures()['nvme'][0].current} °C"
