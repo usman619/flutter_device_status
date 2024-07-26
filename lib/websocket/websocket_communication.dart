@@ -6,8 +6,8 @@ class WebsocketCommunication {
   final WebSocketChannel channel;
   CommunicationState _state = CommunicationState.disconnected;
 
-  WebsocketCommunication(String url)
-      : channel = WebSocketChannel.connect(Uri.parse(url)) {
+  WebsocketCommunication()
+      : channel = WebSocketChannel.connect(Uri.parse('ws://localhost:9499')) {
     _state = CommunicationState.connected;
   }
 
@@ -20,7 +20,7 @@ class WebsocketCommunication {
   }
 
   Stream<String> get messages =>
-      channel.stream.map((event) => event.toString());
+      channel.stream.map((event) => event.toString()).asBroadcastStream();
 
   void disconnect() {
     channel.sink.close(status.goingAway);

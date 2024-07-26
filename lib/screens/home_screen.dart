@@ -1,28 +1,29 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_device_status/components/app_drawer.dart';
 import 'package:flutter_device_status/themes/text_theme.dart';
 import 'package:flutter_device_status/websocket/websocket_communication.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final WebsocketCommunication websocketCommunication;
+  const HomeScreen(this.websocketCommunication);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  WebsocketCommunication? _websocketCommunication;
   final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
-    _websocketCommunication = WebsocketCommunication('ws://localhost:9499');
+    // websocketCommunication = WebsocketCommunication('ws://localhost:9499');
     super.initState();
   }
 
   @override
   void dispose() {
-    _websocketCommunication?.disconnect();
+    widget.websocketCommunication.disconnect();
     _controller.dispose();
     super.dispose();
   }
@@ -50,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                _websocketCommunication?.sendMessage(_controller.text);
+                widget.websocketCommunication.sendMessage(_controller.text);
               },
               child: Text(
                 'Send Message',
@@ -58,18 +59,29 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            StreamBuilder(
-              stream: _websocketCommunication?.messages,
+            StreamBuilder<String>(
+              stream: widget.websocketCommunication.messages,
               builder: (context, snapshot) {
-                return Text(
-                  snapshot.hasData ? '${snapshot.data}' : '',
-                  style: bodyTextTheme,
-                );
+                if (snapshot.hasData) {
+                  print("Snapshot has data");
+                  return Text(
+                    snapshot.hasData ? '${snapshot.data}' : '',
+                    style: bodyTextTheme,
+                  );
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  return Center(
+                    child: CupertinoActivityIndicator(
+                      color: Theme.of(context).colorScheme.surface,
+                    ),
+                  );
+                }
               },
             ),
             const SizedBox(height: 20),
             Text(
-              'Connection State: ${_websocketCommunication?.state.toString().split('.').last ?? 'disconnected'}',
+              'Connection State: ${widget.websocketCommunication.state.toString().split('.').last}',
               style: bodyTextTheme,
             ),
           ],
