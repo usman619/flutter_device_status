@@ -7,8 +7,13 @@ mixin ComputerDataManager {
       StreamController<ComputerData>.broadcast();
   static ComputerData computerData = ComputerData.emptyData();
 
-  static void addComputerData(ComputerData computerData) {
-    ComputerDataManager.computerData = computerData;
-    computerDataController.add(computerData);
+  static void addComputerData(ComputerData? computerData) {
+    if (computerData != null) {
+      ComputerDataManager.computerData = computerData;
+      ComputerDataManager.computerDataController.add(computerData);
+    } else {
+      ComputerDataManager.computerData = ComputerData.emptyData();
+      ComputerDataManager.computerDataController.add(ComputerData.emptyData());
+    }
   }
 }
