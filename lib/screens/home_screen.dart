@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_device_status/components/app_drawer.dart';
 import 'package:flutter_device_status/data/computer_data.dart';
 import 'package:flutter_device_status/data/computer_data_manager.dart';
+import 'package:flutter_device_status/service/websocket/communication_state.dart';
 import 'package:flutter_device_status/themes/text_theme.dart';
-import 'package:flutter_device_status/websocket/websocket_v2.dart';
+import 'package:flutter_device_status/service/websocket/websocket_service.dart';
 
 class HomeScreen extends StatefulWidget {
   @override

@@ -1,1 +1,0 @@
-enum CommunicationState { connected, disconnected }

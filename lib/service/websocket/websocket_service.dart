@@ -4,9 +4,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_device_status/data/computer_data.dart';
 import 'package:flutter_device_status/data/computer_data_manager.dart';
+import 'package:flutter_device_status/service/websocket/communication_state.dart';
 import 'package:web_socket_channel/io.dart';
-
-enum WebSocketState { connected, disconnected }
 
 class WebSocketService {
   static const int port = 9499;

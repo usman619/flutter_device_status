@@ -1,0 +1,1 @@
+enum WebSocketState { connected, disconnected }

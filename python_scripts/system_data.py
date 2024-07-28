@@ -117,8 +117,8 @@ def get_system_info():
         gpu = gpus[0]
         gpu_name = gpu.name
         gpu_memory_total = f"{gpu.memoryTotal} MB"
-        gpu_memory_used = f"{gpu.memoryUsed} MB"
-        gpu_memory_free = f"{gpu.memoryFree} MB"
+        # gpu_memory_used = f"{gpu.memoryUsed} MB"
+        # gpu_memory_free = f"{gpu.memoryFree} MB"
 
     return json.dumps({
         "username": username,
@@ -133,17 +133,13 @@ def get_system_info():
         "cpu_freq_max": cpu_freq_max,
         "gpu_name": gpu_name,
         "gpu_memory_total" : gpu_memory_total,
-        "gpu_memory_used": gpu_memory_used,
-        "gpu_memory_free": gpu_memory_free,
+        
         "virtual_memory_total": virtual_memory_total,
-        "virtual_memory_available": virtual_memory_available,
-        "virtual_memory_used": virtual_memory_used,
+        
         "swap_memory_total": swap_memory_total,
-        "swap_memory_available": swap_memory_available,
-        "swap_memory_used": swap_memory_used,
+        
         "disk_usage_total": disk_usage_total,
-        "disk_usage_available": disk_usage_available,
-        "disk_usage_used": disk_usage_used,
+        
         
     })
 
@@ -152,6 +148,8 @@ def get_details():
     gpus = GPUtil.getGPUs()
     gpu_load = ""
     gpu_temp = ""
+    gpu_memory_used = ""
+    gpu_memory_free = ""
     if not gpus:
         gpu_load = "-"
         gpu_temp = "- °C"
@@ -159,13 +157,15 @@ def get_details():
         gpu = gpus[0]
         gpu_load = f"{gpu.load * 100:.2f}%"
         gpu_temp = f"{gpu.temperature} °C"
+        gpu_memory_used = f"{gpu.memoryUsed} MB"
+        gpu_memory_free = f"{gpu.memoryFree} MB"
     
     sensorsBattery = psutil.sensors_battery()
     batteryPercent = 0.0
     batterySecsLeft = 0
     batteryPowerPlugged = True
     if sensorsBattery is not None:
-        batteryPercent = getattr(sensorsBattery, 'percent')
+        batteryPercent = getattr(sensorsBattery, 'percent').__round__(2)
         batterySecsLeft = getattr(sensorsBattery, 'secsleft')
         batteryPowerPlugged=  getattr(sensorsBattery, 'power_plugged')
 
@@ -182,6 +182,21 @@ def get_details():
         "disk_usage_percent": psutil.disk_usage('/').percent,
         "battery_percent": batteryPercent,
         "battery_secs_left": batterySecsLeft,
-        "battery_power_plugged": batteryPowerPlugged
+        "battery_power_plugged": batteryPowerPlugged,
 
+        "gpu_memory_used": gpu_memory_used,
+        "gpu_memory_free": gpu_memory_free,
+
+        "virtual_memory_available": virtual_memory_available,
+        "virtual_memory_used": virtual_memory_used,
+
+        "swap_memory_available": swap_memory_available,
+        "swap_memory_used": swap_memory_used,
+
+        "disk_usage_available": disk_usage_available,
+        "disk_usage_used": disk_usage_used,
     })
+
+print(get_system_info())
+print("---------------------------------------------------")
+print(get_details())
