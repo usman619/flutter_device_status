@@ -59,4 +59,12 @@ class WebSocketService {
       currentWebsocket!.channel.sink.add('get_details()');
     }
   }
+
+  static bool isConnected() {
+    if (webSocketState == WebSocketState.connected) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
