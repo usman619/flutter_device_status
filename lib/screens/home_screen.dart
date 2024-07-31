@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_device_status/components/app_drawer.dart';
@@ -15,6 +16,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  List<FlSpot> core0 = [];
+  List<FlSpot> core1 = [];
+  List<FlSpot> core2 = [];
+  List<FlSpot> core3 = [];
+  int updateTime = 0;
+  final ValueNotifier<bool> _dataUpdatedNotifier = ValueNotifier(false);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,10 +41,6 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Center(
             child: Column(
               children: [
-                // TextField(
-                //   controller: _controller,
-                //   decoration: const InputDecoration(labelText: 'Send a message'),
-                // ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
@@ -52,13 +56,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   stream: ComputerDataManager.computerDataController.stream,
                   builder: (context, AsyncSnapshot<ComputerData> snapshot) {
                     if (snapshot.hasData) {
-                      // print("Snapshot has data");
                       final ComputerData computerData = snapshot.data!;
+                      core0 = updateCpuCore0(computerData, core0);
+                      core1 = updateCpuCore1(computerData, core1);
+                      core2 = updateCpuCore2(computerData, core2);
+                      core3 = updateCpuCore3(computerData, core3);
+                      _dataUpdatedNotifier.value = !_dataUpdatedNotifier.value;
                       return Column(
                         children: [
                           _systemInfoNeuBox(computerData),
                           const SizedBox(height: 20),
                           _systemDetailInfoNeuBox(computerData),
+                          const SizedBox(height: 20),
+                          _cpuCoreTemps(),
                         ],
                       );
                     } else if (snapshot.hasError) {
@@ -231,5 +241,129 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ]),
     );
+  }
+
+  Widget _cpuCoreTemps() {
+    return NeuBox(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: AspectRatio(
+          aspectRatio: 1.70,
+          child: ValueListenableBuilder<bool>(
+            valueListenable: _dataUpdatedNotifier,
+            builder: (context, value, child) {
+              return LineChart(
+                LineChartData(
+                  titlesData: const FlTitlesData(
+                    show: true,
+                    rightTitles: AxisTitles(
+                      // Make it disappear
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    topTitles: AxisTitles(
+                      // Make it disappear
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true), axisNameWidget: Text('Temperature (°C)'),),
+                    bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: true), axisNameWidget: Text('Time (s)'),),
+                  ),
+                  minX: 0,
+                  maxY: 100,
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: core0,
+                      color: Colors.blue,
+                      barWidth: 2,
+                      isCurved: true,
+                      curveSmoothness: 0.35,
+                      preventCurveOverShooting: true,
+                      dotData: const FlDotData(show: false),
+                    ),
+                    LineChartBarData(
+                      spots: core1,
+                      color: Colors.red,
+                      barWidth: 2,
+                      isCurved: true,
+                      curveSmoothness: 0.35,
+                      preventCurveOverShooting: true,
+                      dotData: const FlDotData(show: false),
+                    ),
+                    LineChartBarData(
+                      spots: core2,
+                      color: Colors.green,
+                      barWidth: 2,
+                      isCurved: true,
+                      curveSmoothness: 0.35,
+                      preventCurveOverShooting: true,
+                      dotData: const FlDotData(show: false),
+                    ),
+                    LineChartBarData(
+                      spots: core3,
+                      color: Colors.yellow,
+                      barWidth: 2,
+                      isCurved: true,
+                      curveSmoothness: 0.35,
+                      preventCurveOverShooting: true,
+                      dotData: const FlDotData(show: false),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<FlSpot> updateCpuCore0(ComputerData computerData, List<FlSpot> core0) {
+    List<double> coreTemps = computerData.getParsedCoreTemps();
+    if (coreTemps.isNotEmpty) {
+      debugPrint('Updating CPU core temps...');
+      debugPrint('-------------------------------------------------------------');
+      print(coreTemps);
+      core0.add(FlSpot(updateTime.toDouble(), coreTemps[0]));
+      if (core0.length > 10) {
+        core0.removeAt(0);
+      }
+      updateTime += 30;
+    }
+    return core0;
+  }
+   List<FlSpot> updateCpuCore1(ComputerData computerData, List<FlSpot> core0) {
+    List<double> coreTemps = computerData.getParsedCoreTemps();
+    if (coreTemps.isNotEmpty) {
+      
+      core0.add(FlSpot(updateTime.toDouble(), coreTemps[0]));
+      if (core0.length > 10) {
+        core0.removeAt(0);
+      }
+      updateTime += 30;
+    }
+    return core1;
+  }
+   List<FlSpot> updateCpuCore2(ComputerData computerData, List<FlSpot> core0) {
+    List<double> coreTemps = computerData.getParsedCoreTemps();
+    if (coreTemps.isNotEmpty) {
+      
+      core0.add(FlSpot(updateTime.toDouble(), coreTemps[0]));
+      if (core0.length > 10) {
+        core0.removeAt(0);
+      }
+      updateTime += 30;
+    }
+    return core2;
+  }
+   List<FlSpot> updateCpuCore3(ComputerData computerData, List<FlSpot> core0) {
+    List<double> coreTemps = computerData.getParsedCoreTemps();
+    if (coreTemps.isNotEmpty) {
+      
+      core0.add(FlSpot(updateTime.toDouble(), coreTemps[0]));
+      if (core0.length > 10) {
+        core0.removeAt(0);
+      }
+      updateTime += 30;
+    }
+    return core3;
   }
 }

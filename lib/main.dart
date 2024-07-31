@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_device_status/screens/home_screen.dart';
 import 'package:flutter_device_status/screens/settings_screen.dart';
 import 'package:flutter_device_status/themes/theme_provider.dart';
-import 'package:flutter_device_status/widgets/cpu_core_temps.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -24,7 +23,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/settings': (context) => const SettingsScreen(),
       },
-      home: const TestingWidgets(),
+      home: const HomeScreen(),
       // home: const HomeScreen(),
     );
   }

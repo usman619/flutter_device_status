@@ -305,4 +305,16 @@ class ComputerData {
         return <String>['Error: type $typeString not found'];
     }
   }
+
+  
+  List<double> getParsedCoreTemps() {
+    List<String> coreTempsList = coreTemps?.split(', ') ?? [];
+    
+    List<double> parsedCoreTemps = coreTempsList.map((temp) {
+      String value = temp.split(':')[1].trim();
+      return double.parse(value.split(' ')[0]);
+    }).toList();
+
+    return parsedCoreTemps;
+  }
 }
