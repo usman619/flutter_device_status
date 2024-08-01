@@ -248,7 +248,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: AspectRatio(
-          aspectRatio: 1.70,
+          aspectRatio: 2,
           child: ValueListenableBuilder<bool>(
             valueListenable: _dataUpdatedNotifier,
             builder: (context, value, child) {
@@ -264,11 +264,19 @@ class _HomeScreenState extends State<HomeScreen> {
                       // Make it disappear
                       sideTitles: SideTitles(showTitles: false),
                     ),
-                    leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true), axisNameWidget: Text('Temperature (°C)'),),
-                    bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: true), axisNameWidget: Text('Time (s)'),),
+                    leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false), axisNameWidget: Text('Temperature (°C)'),),
+                    bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false), axisNameWidget: Text('Time (s)'),),
                   ),
-                  minX: 0,
-                  maxY: 100,
+                  // minY: 80,
+                  // maxY: 40,
+                  // minX: core0.first.x,
+                  // maxX: core0.last.x,
+                  lineTouchData: const LineTouchData(enabled: true),
+                      clipData: const FlClipData.all(),
+                      gridData: const FlGridData(
+                        show: true,
+                        drawVerticalLine: false,
+                      ),
                   lineBarsData: [
                     LineChartBarData(
                       spots: core0,
@@ -323,7 +331,7 @@ class _HomeScreenState extends State<HomeScreen> {
       debugPrint('-------------------------------------------------------------');
       print(coreTemps);
       core0.add(FlSpot(updateTime.toDouble(), coreTemps[0]));
-      if (core0.length > 10) {
+      if (core0.length > 20) {
         core0.removeAt(0);
       }
       updateTime += 30;
@@ -335,7 +343,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (coreTemps.isNotEmpty) {
       
       core0.add(FlSpot(updateTime.toDouble(), coreTemps[0]));
-      if (core0.length > 10) {
+      if (core0.length > 20) {
         core0.removeAt(0);
       }
       updateTime += 30;
@@ -347,7 +355,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (coreTemps.isNotEmpty) {
       
       core0.add(FlSpot(updateTime.toDouble(), coreTemps[0]));
-      if (core0.length > 10) {
+      if (core0.length > 20) {
         core0.removeAt(0);
       }
       updateTime += 30;
@@ -359,7 +367,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (coreTemps.isNotEmpty) {
       
       core0.add(FlSpot(updateTime.toDouble(), coreTemps[0]));
-      if (core0.length > 10) {
+      if (core0.length > 20) {
         core0.removeAt(0);
       }
       updateTime += 30;

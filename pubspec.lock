@@ -120,6 +120,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  gauge_chart:
+    dependency: "direct main"
+    description:
+      name: gauge_chart
+      sha256: "029a4d120b81f65db8bfb3e5e342c688538964790f0afe72bc7dda13b6807369"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.3"
   google_fonts:
     dependency: "direct main"
     description:
@@ -389,6 +397,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  syncfusion_flutter_charts:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_charts
+      sha256: d39bd6022083f66e24664d562c6416c25465fb2969df2080a9eac242ef371361
+      url: "https://pub.dev"
+    source: hosted
+    version: "26.2.7"
+  syncfusion_flutter_core:
+    dependency: transitive
+    description:
+      name: syncfusion_flutter_core
+      sha256: fd4d2cdbf8d0d1e3441817cb8a03f896566fad5187788957e78492fe16800388
+      url: "https://pub.dev"
+    source: hosted
+    version: "26.2.7"
   term_glyph:
     dependency: transitive
     description:

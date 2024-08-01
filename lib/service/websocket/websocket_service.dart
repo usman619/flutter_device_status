@@ -46,7 +46,7 @@ class WebSocketService {
 
     // Call a function askSystemDetails() to get the system details from the server
     timer = Timer.periodic(
-        const Duration(seconds: 30), (Timer t) => askSystemDetails());
+        const Duration(seconds: 2), (Timer t) => askSystemDetails());
   }
 
   static void askSystemDetails() {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_device_status/screens/home_screen.dart';
 import 'package:flutter_device_status/screens/settings_screen.dart';
 import 'package:flutter_device_status/themes/theme_provider.dart';
+import 'package:flutter_device_status/widgets/circular_indicator.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/settings': (context) => const SettingsScreen(),
       },
-      home: const HomeScreen(),
+      home: const Testing(),
       // home: const HomeScreen(),
     );
   }
