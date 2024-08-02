@@ -413,6 +413,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "26.2.7"
+  syncfusion_flutter_gauges:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_gauges
+      sha256: "009f85edcb59dac20f1c5b445170de74eb65be774c6fdd4f8dc7bbc00e261f32"
+      url: "https://pub.dev"
+    source: hosted
+    version: "26.2.7"
   term_glyph:
     dependency: transitive
     description:

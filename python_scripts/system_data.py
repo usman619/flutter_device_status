@@ -5,6 +5,7 @@ import time
 from datetime import datetime
 import cpuinfo
 import json
+import speedtest
 
 os_name = os.uname()
 username = os.getlogin()
@@ -107,6 +108,18 @@ disk_usage_available = bytes_to_human_readable(psutil.disk_usage('/').free)
 disk_usage_used = bytes_to_human_readable(psutil.disk_usage('/').used)
 # -----------------------------------------------------------------------------------
 
+# Speed Test (Not using it for now as it takes a lot of time)
+def get_speed_test():
+    st = speedtest.Speedtest()
+    st.get_best_server()
+    download_speed = st.download() / 1000000 # Converting to Mbps
+    upload_speed = st.upload() / 1000000 # Converting to Mbps
+    return download_speed, upload_speed
+
+# download_speed, upload_speed = get_speed_test()
+# download_speed = f"{download_speed:.2f} Mbps"
+# upload_speed = f"{upload_speed:.2f} Mbps"
+
 # 13 attributes
 def get_system_info():
 
@@ -134,7 +147,7 @@ def get_system_info():
         
     })
 
-# 21 attributes
+# 21 attributes + 2 unused attributes(download_speed, upload_speed)
 def get_details():
     
     sensorsBattery = psutil.sensors_battery()
@@ -178,3 +191,7 @@ def get_details():
 # print(get_system_info())
 # print("---------------------------------------------------")
 # print(get_details())
+
+# print(get_speed_test())
+# print(download_speed)
+# print(upload_speed)
