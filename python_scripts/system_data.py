@@ -188,9 +188,9 @@ def get_details():
         "disk_usage_used": disk_usage_used,
     })
 
-# print(get_system_info())
-# print("---------------------------------------------------")
-# print(get_details())
+print(get_system_info())
+print("---------------------------------------------------")
+print(get_details())
 
 # print(get_speed_test())
 # print(download_speed)

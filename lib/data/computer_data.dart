@@ -317,4 +317,41 @@ class ComputerData {
 
     return parsedCoreTemps;
   }
+
+  double getParsedCpuPercent() {
+    if (cpuPercent == null) {
+      return 0.0;
+    }else {
+      List<String> temp = cpuPercent!.split(':');
+      return double.parse(temp[1].trim());
+    }
+  }
+
+  double getParsedRamUsedPercent() {
+    if (virtualMemoryPercent == null) {
+      return 0.0;
+    }else {
+      List<String> temp = virtualMemoryPercent!.split(':');
+      return double.parse(temp[0].trim());
+    }
+  }
+
+  double getParsedDiskUsagePercent() {
+    
+    if (diskUsagePercent == null) {
+      return 0.0;
+    }else {
+      List<String> temp = diskUsagePercent!.split(':');
+      return double.parse(temp[0].trim());
+    }
+  }
+
+  double getParsedBatteryChargedPercent() {
+    if (batteryPercent == null) {
+      return 0.0;
+    }else {
+      List<String> temp = batteryPercent!.split(':');
+      return double.parse(temp[0].trim());
+    }
+  }
 }

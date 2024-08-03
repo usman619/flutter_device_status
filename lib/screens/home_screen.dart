@@ -7,6 +7,8 @@ import 'package:flutter_device_status/data/computer_data.dart';
 import 'package:flutter_device_status/data/computer_data_manager.dart';
 import 'package:flutter_device_status/themes/text_theme.dart';
 import 'package:flutter_device_status/service/websocket/websocket_service.dart';
+import 'package:flutter_device_status/widgets/battery_indicator.dart';
+import 'package:flutter_device_status/widgets/circular_indicator.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -57,18 +59,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   builder: (context, AsyncSnapshot<ComputerData> snapshot) {
                     if (snapshot.hasData) {
                       final ComputerData computerData = snapshot.data!;
-                      core0 = updateCpuCore0(computerData, core0);
-                      core1 = updateCpuCore1(computerData, core1);
-                      core2 = updateCpuCore2(computerData, core2);
-                      core3 = updateCpuCore3(computerData, core3);
+                      // core0 = updateCpuCore0(computerData, core0);
+                      // core1 = updateCpuCore1(computerData, core1);
+                      // core2 = updateCpuCore2(computerData, core2);
+                      // core3 = updateCpuCore3(computerData, core3);
                       _dataUpdatedNotifier.value = !_dataUpdatedNotifier.value;
+                      
                       return Column(
                         children: [
                           _systemInfoNeuBox(computerData),
                           const SizedBox(height: 20),
                           _systemDetailInfoNeuBox(computerData),
                           const SizedBox(height: 20),
-                          _cpuCoreTemps(),
+                          // _cpuCoreTemps(),
+                          _differentWidgets(computerData.getParsedBatteryChargedPercent(), computerData.getParsedRamUsedPercent(), computerData.getParsedDiskUsagePercent())
                         ],
                       );
                     } else if (snapshot.hasError) {
@@ -240,6 +244,23 @@ class _HomeScreenState extends State<HomeScreen> {
           style: bodyTextTheme,
         ),
       ]),
+    );
+  }
+
+  Widget _differentWidgets(double usedBattery, double usedRam, double usedDisk) {
+    return Row(
+      children: [
+        // Text('Battery: $usedBattery'),
+        // Text('RAM: $usedRam'),
+        // Text('Disk: $usedDisk'),
+        batteryIndicator(usedBattery),
+        const SizedBox(width: 20),
+        gaugeChart(usedRam,'RAM'),
+        const SizedBox(width: 20),
+        gaugeChart(usedDisk,'STORAGE'),
+        const SizedBox(width: 20),
+
+      ],
     );
   }
 

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_device_status/themes/text_theme.dart';
 
@@ -12,7 +13,7 @@ class AppDrawer extends StatelessWidget {
         children: [
           DrawerHeader(
             child: Icon(
-              Icons.laptop_windows_rounded,
+              CupertinoIcons.device_laptop,
               size: 40,
               color: Theme.of(context).colorScheme.inversePrimary,
             ),
@@ -24,7 +25,7 @@ class AppDrawer extends StatelessWidget {
                 'HOME',
                 style: drawerTextTheme,
               ),
-              leading: const Icon(Icons.home),
+              leading: const Icon(CupertinoIcons.home),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/home');
@@ -38,7 +39,7 @@ class AppDrawer extends StatelessWidget {
                 'SETTINGS',
                 style: drawerTextTheme,
               ),
-              leading: const Icon(Icons.settings),
+              leading: const Icon(CupertinoIcons.settings),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/settings');
