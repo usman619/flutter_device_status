@@ -4,8 +4,7 @@ import 'package:flutter_device_status/themes/text_theme.dart';
 
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
-Widget gaugeChart(double used,String title) {
-  final double free = 100 - used;
+Widget gaugeChart(double used,String title, {String subtitle = ''}) {
   return NeuBox(
     child: Center(
 
@@ -18,25 +17,25 @@ Widget gaugeChart(double used,String title) {
                 showAxisLine: false,
                 showLabels: false,
                 showTicks: false,
-                startAngle: 180,
-                endAngle: 0,
+                // startAngle: ,
+                // endAngle: 360,
                 minimum: 0,
                 maximum: 100,
                 // interval: 10,
-                radiusFactor: 1,
+                radiusFactor: 0.8,
                 
                 ranges: <GaugeRange>[
                   GaugeRange(
-                    startWidth: 40,
-                    endWidth: 40,
+                    startWidth: 35,
+                    endWidth: 35,
                     startValue: 0,
                     endValue: used,
                     color: Colors.blue,
                   ),
                   GaugeRange(
-                    startWidth: 40,
-                    endWidth: 40,
-                    startValue: free,
+                    startWidth: 35,
+                    endWidth: 35,
+                    startValue: used,
                     endValue: 100,
                     color: Colors.grey.shade100,
                   ),
@@ -45,34 +44,19 @@ Widget gaugeChart(double used,String title) {
                   GaugeAnnotation(
                     widget: Text(
                       '$used %',
-                      style: bodyTextTheme,
+                      style: titleTextTheme,
                     ),
                     angle: 90,
                     // positionFactor: 0.5,
                   ),
+                  GaugeAnnotation(widget: Text(subtitle,style: bodyTextTheme),angle: 90,),
                 ],
-                // pointers:  <GaugePointer>[
-                  // NeedlePointer(
-                  //   value: used,
-                  //   enableAnimation: true,
-                  //   animationDuration: 1000,
-                  //   animationType: AnimationType.ease,
-                  //   needleColor: Colors.black,
-                  //   needleStartWidth: 1,
-                  //   needleEndWidth: 5,
-                  //   knobStyle: const KnobStyle(
-                  //     knobRadius: 0.08,
-                  //     sizeUnit: GaugeSizeUnit.factor,
-                  //     borderColor: Colors.black,
-                  //     color: Colors.white,
-                  //     borderWidth: 0.035,
-                  //   ),
-                  // ),
-                // ],
               ),
             ],
           ),
-          Text(title,style: bodyTextTheme,),
+          // Text(subtitle,style: bodyTextTheme,),
+          Text(title,style: titleTextTheme,),
+          const SizedBox(height: 10,),
           ],
           
         ),

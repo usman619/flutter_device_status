@@ -354,4 +354,12 @@ class ComputerData {
       return double.parse(temp[0].trim());
     }
   }
+  double getParsedGpuLoad() {
+    if (gpuLoad == null) {
+      return 0.0;
+    }else {
+      List<String> temp = gpuLoad!.split(':');
+      return double.parse(temp[0].trim());
+    }
+  }
 }

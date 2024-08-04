@@ -35,6 +35,18 @@ class _HomeScreenState extends State<HomeScreen> {
           style: titleTextTheme,
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+                  icon: Icon(
+                    Icons.refresh,
+                    color: Theme.of(context).colorScheme.inversePrimary,
+                  ),
+                  onPressed: () {
+                    WebSocketService.askSystemDetails();
+                  },
+                  
+                ),
+        ],
       ),
       drawer: const AppDrawer(),
       body: Padding(
@@ -43,36 +55,29 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Center(
             child: Column(
               children: [
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    WebSocketService.askSystemDetails();
-                  },
-                  child: Text(
-                    'Get System Info',
-                    style: bodyTextTheme,
-                  ),
-                ),
+                
                 const SizedBox(height: 20),
                 StreamBuilder<ComputerData>(
                   stream: ComputerDataManager.computerDataController.stream,
                   builder: (context, AsyncSnapshot<ComputerData> snapshot) {
                     if (snapshot.hasData) {
                       final ComputerData computerData = snapshot.data!;
-                      // core0 = updateCpuCore0(computerData, core0);
-                      // core1 = updateCpuCore1(computerData, core1);
-                      // core2 = updateCpuCore2(computerData, core2);
-                      // core3 = updateCpuCore3(computerData, core3);
+                      core0 = updateCpuCore0(computerData, core0);
+                      core1 = updateCpuCore1(computerData, core1);
+                      core2 = updateCpuCore2(computerData, core2);
+                      core3 = updateCpuCore3(computerData, core3);
                       _dataUpdatedNotifier.value = !_dataUpdatedNotifier.value;
+                     
                       
                       return Column(
                         children: [
                           _systemInfoNeuBox(computerData),
                           const SizedBox(height: 20),
-                          _systemDetailInfoNeuBox(computerData),
+                          // _systemDetailInfoNeuBox(computerData),
                           const SizedBox(height: 20),
-                          // _cpuCoreTemps(),
-                          _differentWidgets(computerData.getParsedBatteryChargedPercent(), computerData.getParsedRamUsedPercent(), computerData.getParsedDiskUsagePercent())
+                          _differentWidgets(computerData),
+                          const SizedBox(height: 20),
+                          _cpuCoreTemps(),
                         ],
                       );
                     } else if (snapshot.hasError) {
@@ -101,7 +106,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _systemInfoNeuBox(ComputerData computerData) {
     return NeuBox(
-      child: Column(children: [
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+        const SizedBox(height: 10),
+        Text('System Information', style: titleTextTheme),
+        const SizedBox(height: 10),
         Text(
           'Username: ${computerData.username}',
           style: bodyTextTheme,
@@ -160,6 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
           'Disk Usage Total: ${computerData.diskUsageTotal}',
           style: bodyTextTheme,
         ),
+        const SizedBox(height: 10),
       ]),
     );
   }
@@ -247,19 +258,24 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _differentWidgets(double usedBattery, double usedRam, double usedDisk) {
+  Widget _differentWidgets(ComputerData computerData) {
+    
+    double usedBattery = computerData.getParsedBatteryChargedPercent();
+    double usedRam = computerData.getParsedRamUsedPercent();
+    double usedDisk = computerData.getParsedDiskUsagePercent();
+    double gpuLoad = computerData.getParsedGpuLoad();
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         // Text('Battery: $usedBattery'),
         // Text('RAM: $usedRam'),
         // Text('Disk: $usedDisk'),
-        batteryIndicator(usedBattery),
-        const SizedBox(width: 20),
+        // batteryIndicator(usedBattery),
+        
         gaugeChart(usedRam,'RAM'),
-        const SizedBox(width: 20),
         gaugeChart(usedDisk,'STORAGE'),
-        const SizedBox(width: 20),
-
+        gaugeChart(gpuLoad,'GPU'),
+    
       ],
     );
   }

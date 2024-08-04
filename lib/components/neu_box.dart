@@ -15,7 +15,7 @@ class NeuBox extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black : Colors.grey.shade500,
+            color: isDark ? Colors.black : Colors.grey.shade800,
             blurRadius: 15,
             offset: const Offset(4, 4),
           ),
@@ -26,7 +26,7 @@ class NeuBox extends StatelessWidget {
           )
         ],
       ),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
       child: child,
     );
   }

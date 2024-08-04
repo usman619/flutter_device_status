@@ -76,7 +76,7 @@ else:
     gpu_total_memory = f"{gpu.memoryTotal} MB"
     gpu_used_memory = f"{gpu.memoryUsed} MB"
     gpu_free_memory = f"{gpu.memoryFree} MB"
-    gpu_load = f"{gpu.load * 100:.2f}%"
+    gpu_load = f"{gpu.load * 100:.2f}"
     gpu_temp = f"{gpu.temperature} °C"
 
 
@@ -188,9 +188,9 @@ def get_details():
         "disk_usage_used": disk_usage_used,
     })
 
-print(get_system_info())
-print("---------------------------------------------------")
-print(get_details())
+# print(get_system_info())
+# print("---------------------------------------------------")
+# print(get_details())
 
 # print(get_speed_test())
 # print(download_speed)
